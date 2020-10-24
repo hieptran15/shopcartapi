@@ -54,4 +54,6 @@ app.put("/api/products/:id",async (req,res)=>{
 });
 
 
- app.listen(8080);
+ app.listen(process.env.PORT,()=>{
+     console.log("start server")
+ });
