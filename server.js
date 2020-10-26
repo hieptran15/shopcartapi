@@ -9,6 +9,8 @@ app.use(bodyParser.json())
 const MONGO_URI="mongodb+srv://pactice:hieptran@cluster0.ibjow.mongodb.net/pactice_db?retryWrites=true&w=majority"
 mongoose.connect(MONGO_URI,{ useNewUrlParser: true,useUnifiedTopology: true },);
 
+
+// products..................................................
 const Product=mongoose.model("products", new mongoose.Schema({
     _id:{type: String, default:shortid.generate},
     title:String,
@@ -52,6 +54,68 @@ app.put("/api/products/:id",async (req,res)=>{
     res.status(200).json({success:true})
     res.send(UpdateProduct);
 });
+
+// order...........................................................
+
+const Order=mongoose.model("order",new mongoose.Schema({
+    _id:{type: String, default:shortid.generate},
+    email:String,
+    name:String,
+    address:String,
+    total:Number,
+    cartItems:[{
+        _id:String,
+        title:String,
+        price:Number,
+        count:Number,
+    }],
+},{
+    timestamps:true,
+}))
+
+app.get("/api/order",async (req,res)=>{
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+   const order=await Order.find({});
+   res.send(order);
+});
+
+app.post("/api/order",async (req,res)=>{
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+
+    if(!req.body.email||!req.body.name||!req.body.address||!req.body.total||!req.body.cartItems)
+    {
+        return res.send("data is required")
+    }
+    const order=new Order(req.body);
+    const saveOrder=await order.save();
+    res.status(200).json({success:true})
+    res.send(saveOrder);
+})
+
 
 
  app.listen(process.env.PORT,()=>{
