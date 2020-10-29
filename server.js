@@ -116,8 +116,14 @@ app.post("/api/order",async (req,res)=>{
     res.send(saveOrder);
 })
 
+app.get("/search/:title",(req,res)=>{
+    var regex=new RegExp(req.params.title,"i");
+    Product.find({title:regex}).then((result)=>{
+        res.status(200).json(result)
+    })
 
-
+})
  app.listen(process.env.PORT,()=>{
      console.log("start server")
  });
+
